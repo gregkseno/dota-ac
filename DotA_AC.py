@@ -3,19 +3,20 @@
 import time
 import cv2
 # TODO: Change
-import imutils
+import numpy as np
 import pyautogui
-from PIL import ImageGrab
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QMainWindow, QSystemTrayIcon, QStyle, QAction, QMenu, qApp
 from PyQt5.QtCore import QThread, QEvent
-import pygame
 from pynput.keyboard import Key, Listener
+from playsound import playsound
+
+
+# import matplotlib.pyplot as plt
 
 
 class KeyMonitor(QtCore.QObject):
-    # keyPressed = QtCore.pyqtSignal(QKeyEvent)
 
     def __init__(self, parent=None):
         super(KeyMonitor, self).__init__(parent)
@@ -24,7 +25,6 @@ class KeyMonitor(QtCore.QObject):
     def on_release(self, key):
         if key == Key.f10:
             event = QKeyEvent(QEvent.KeyPress, QtCore.Qt.Key_F10, QtCore.Qt.NoModifier, 0, 0, 0)
-            # self.keyPressed.emit(event)
             self.parent().key_event(event)
 
     def stop_monitoring(self):
@@ -36,79 +36,78 @@ class KeyMonitor(QtCore.QObject):
 
 class AutoClickerThread(QThread):
     _working = False
+    _vx_default = 0.3
+    _vy_default = 0.3347
+    _vw_default = 0.4
+    _vh_default = 0.2361
+    _aspect_default = 16 / 9
+    _threshold = 0.8
 
-    def __init__(self, mainwindow, parent=None):
+    def __init__(self, mainwindow):
         super().__init__()
         self.mainwindow = mainwindow
 
     def run(self):
         self._working = True
-        resolution = self.mainwindow.comboBox.currentText()
-        screen_height = int(resolution.split("x")[0])
-        screen_width = int(resolution.split("x")[1])
-        btn_tmp = cv2.imread(resolution + '.jpg')
-        btn_tmp = cv2.cvtColor(btn_tmp, cv2.COLOR_BGR2GRAY)
-        btn_tmp = cv2.Canny(btn_tmp, 50, 200)
-        if resolution == "1360x768":
-            btn_tmp = imutils.resize(btn_tmp, width=int(btn_tmp.shape[1] * 1360/1920))
-        w, h = btn_tmp.shape[::-1]
+        resolution = pyautogui.size()
+        region = self.get_region(resolution)
+        btn_tmp = cv2.imread('accept_button.jpg', cv2.IMREAD_GRAYSCALE)
 
+        # Objects for feature detection and homography of template image
+        orb = cv2.ORB_create()
+        btn_kp, btn_des = orb.detectAndCompute(btn_tmp, None)
+        bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
         while self._working:
-            screenshot = ImageGrab.grab(bbox=(0, 0, screen_height, screen_width))
-            screenshot.save('accept_screen.jpg')
-            print("Trying to find button...")
-            img = cv2.imread('old/accept_screen.jpg')
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            img = cv2.Canny(img, 50, 200)
-            res = cv2.matchTemplate(img, btn_tmp, cv2.TM_CCOEFF_NORMED)
-            (_, maxVal, _, maxLoc) = cv2.minMaxLoc(res)
-            print(maxVal)
-            if maxVal >= 0.8:
-                (startX, startY) = (int(maxLoc[0]), int(maxLoc[1]))
-                (endX, endY) = (int(maxLoc[0] + w), int(maxLoc[1] + h))
-                (x, y) = ((startX + endX) / 2, (startY + endY) / 2)
+            screenshot = pyautogui.screenshot(region=region)
+            img = cv2.cvtColor(np.array(screenshot), cv2.COLOR_BGR2GRAY)
 
-                pyautogui.moveTo(x, y)
-                pyautogui.mouseDown()
-                time.sleep(0.1)
-                pyautogui.mouseUp()
-                print("Accepted")
-                self.stop()
+            accept = self.feature_matching(orb, bf, img, btn_tmp, btn_kp, btn_des)
+            if accept:
+                pyautogui.press("enter")
+                print("accepted")
+                playsound('ne_nado.mp3')
+                if self.is_accepted():
+                    break
             time.sleep(2)
+        self.heroe_select(self.mainwindow.get_heroes())
 
-            """for tmp_scale in np.linspace(0.2, 1.0, 100)[::-1]:
-                resized = imutils.resize(btn_tmp, width=int(btn_tmp.shape[1] * tmp_scale))
-                r = btn_tmp.shape[1] / float(resized.shape[1])
-                if resized.shape[0] < h or resized.shape[1] < w:
-                    break
+    def hero_select(self, heroes):
+        for hero in heroes:
+            pyautogui.write(hero, interval=0.25)
+            if self.is_selected():
+                break
 
-                res = cv2.matchTemplate(img, resized, cv2.TM_CCOEFF_NORMED)
-                (_, maxVal, _, maxLoc) = cv2.minMaxLoc(res)
-                clone = np.dstack([resized, resized, resized])
-                cv2.rectangle(clone, (maxLoc[0], maxLoc[1]),
-                              (maxLoc[0] + w, maxLoc[1] + h), (0, 0, 255), 2)
-                cv2.imshow("22", clone)
-                cv2.waitKey(0)
-                if maxVal >= 0.8:
-                    scale = tmp_scale
-                    found = (maxVal, maxLoc, r)
-                    break
+    def feature_matching(self, orb, bf, img, btn_tmp, btn_kp, btn_des):
+        # Objects for feature detection and homography of screenshot
+        img_kp, img_des = orb.detectAndCompute(img, None)
+        matches = bf.match(btn_des, img_des)
+        if matches:
+            matches = sorted(matches, key=lambda x: x.distance)
+            if len(matches) > 10:
+                src_pts = np.float32([btn_kp[m.queryIdx].pt for m in matches]).reshape(-1, 1, 2)
+                dst_pts = np.float32([img_kp[m.trainIdx].pt for m in matches]).reshape(-1, 1, 2)
+                _, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+                mask = mask.ravel().tolist()
+                unique, counts = np.unique(np.array(mask), return_counts=True)
+                count = dict(zip(unique, counts))
+                print(count[1]/len(mask))
+                if count[1]/len(mask) >= self._threshold:
+                    return True
+        return False
 
-                if found is None or maxVal > found[0]:
-                    scale = tmp_scale
-                    found = (maxVal, maxLoc, r)
-            if found[0] >= 0.8:
-                (_, maxLoc, r) = found
-                (startX, startY) = (int(maxLoc[0] * r), int(maxLoc[1] * r))
-                (endX, endY) = (int((maxLoc[0] + w) * r), int((maxLoc[1] + h) * r))
-                (x, y) = ((startX + endX) / 2, (startY + endY) / 2)
+    def get_region(self, resolution):
+        aspect = resolution[0]/resolution[1]
+        x = int(resolution[0] * aspect / self._aspect_default * self._vx_default)
+        y = int(resolution[1] * aspect / self._aspect_default * self._vy_default)
+        w = int(resolution[0] * aspect / self._aspect_default * self._vw_default)
+        h = int(resolution[1] * aspect / self._aspect_default * self._vh_default)
+        return x, y, w, h
 
-                pyautogui.moveTo(x, y)
-                pyautogui.mouseDown()
-                time.sleep(0.1)
-                pyautogui.mouseUp()
-                print("Accepted")
-            time.sleep(2)"""
+    def is_accepted(self):
+        return True
+
+    def is_selected(self):
+        return True
 
     def stop(self):
         self._working = False
@@ -158,12 +157,6 @@ class MainWindow(QMainWindow):
         self.stopButton.hide()
         self.stopButton.clicked.connect(self.stop_autoclick)
 
-        # Setting up comboBox with screen resolutions
-        self.comboBox = QtWidgets.QComboBox(self.centralwidget)
-        self.comboBox.setGeometry(QtCore.QRect(54, 50, 112, 20))
-        self.comboBox.setObjectName("comboBox")
-        self.comboBox.addItems(resolutions)
-
         # Setting up menu
         self.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(self)
@@ -187,8 +180,10 @@ class MainWindow(QMainWindow):
         self.tray_icon.setContextMenu(tray_menu)
         self.tray_icon.show()
 
+    def get_heroes(self):
+        pass
+
     def start_autoclick(self):
-        self.comboBox.setEnabled(False)
         self.startButton.hide()
         self.stopButton.show()
         self.AutoClickThread_instance.start()
@@ -204,7 +199,6 @@ class MainWindow(QMainWindow):
     def stop_autoclick(self):
         self.startButton.show()
         self.stopButton.hide()
-        self.comboBox.setEnabled(True)
         self.AutoClickThread_instance.stop()
         print("Stopped")
         if self.isHidden():
@@ -233,26 +227,10 @@ class MainWindow(QMainWindow):
         )
 
 
-def normalize_resolutions(resols):
-    ress = []
-    for res in resols:
-        temp = str(res[0]) + "x" + str(res[1])
-        if temp not in ress:
-            ress.append(temp)
-    return ress
-
-
 if __name__ == "__main__":
     import sys
-    pygame.init()
-    resolutions = pygame.display.list_modes()
-    resolutions = normalize_resolutions(resolutions)
-    pygame.quit()
 
     app = QtWidgets.QApplication(sys.argv)
     window = MainWindow()
     window.show()
     sys.exit(app.exec_())
-
-
-
