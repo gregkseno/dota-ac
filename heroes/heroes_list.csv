@@ -1,0 +1,124 @@
+id	name	name_loc	primary_attr	complexity
+1	antimage	Anti-Mage	1	1
+2	axe	Axe	0	1
+3	bane	Bane	2	2
+4	bloodseeker	Bloodseeker	1	1
+5	crystal_maiden	Crystal Maiden	2	1
+6	drow_ranger	Drow Ranger	1	1
+7	earthshaker	Earthshaker	0	2
+8	juggernaut	Juggernaut	1	1
+9	mirana	Mirana	1	2
+11	nevermore	Shadow Fiend	1	2
+10	morphling	Morphling	1	3
+12	phantom_lancer	Phantom Lancer	1	2
+13	puck	Puck	2	2
+14	pudge	Pudge	0	2
+15	razor	Razor	1	1
+16	sand_king	Sand King	0	2
+17	storm_spirit	Storm Spirit	2	2
+18	sven	Sven	0	1
+19	tiny	Tiny	0	2
+20	vengefulspirit	Vengeful Spirit	1	1
+21	windrunner	Windranger	2	2
+22	zuus	Zeus	2	1
+23	kunkka	Kunkka	0	2
+25	lina	Lina	2	1
+31	lich	Lich	2	1
+26	lion	Lion	2	1
+27	shadow_shaman	Shadow Shaman	2	1
+28	slardar	Slardar	0	1
+29	tidehunter	Tidehunter	0	1
+30	witch_doctor	Witch Doctor	2	1
+32	riki	Riki	1	1
+33	enigma	Enigma	2	2
+34	tinker	Tinker	2	2
+35	sniper	Sniper	1	1
+36	necrolyte	Necrophos	2	1
+37	warlock	Warlock	2	1
+38	beastmaster	Beastmaster	0	2
+39	queenofpain	Queen of Pain	2	2
+40	venomancer	Venomancer	1	1
+41	faceless_void	Faceless Void	1	2
+42	skeleton_king	Wraith King	0	1
+43	death_prophet	Death Prophet	2	1
+44	phantom_assassin	Phantom Assassin	1	1
+45	pugna	Pugna	2	2
+46	templar_assassin	Templar Assassin	1	2
+47	viper	Viper	1	1
+48	luna	Luna	1	1
+49	dragon_knight	Dragon Knight	0	1
+50	dazzle	Dazzle	2	1
+51	rattletrap	Clockwerk	0	2
+52	leshrac	Leshrac	2	1
+53	furion	Nature's Prophet	2	2
+54	life_stealer	Lifestealer	0	2
+55	dark_seer	Dark Seer	2	1
+56	clinkz	Clinkz	1	2
+57	omniknight	Omniknight	0	1
+58	enchantress	Enchantress	2	2
+59	huskar	Huskar	0	1
+60	night_stalker	Night Stalker	0	1
+61	broodmother	Broodmother	1	2
+62	bounty_hunter	Bounty Hunter	1	1
+63	weaver	Weaver	1	2
+64	jakiro	Jakiro	2	1
+65	batrider	Batrider	2	2
+66	chen	Chen	2	3
+67	spectre	Spectre	1	2
+69	doom_bringer	Doom	0	2
+68	ancient_apparition	Ancient Apparition	2	2
+70	ursa	Ursa	1	1
+71	spirit_breaker	Spirit Breaker	0	1
+72	gyrocopter	Gyrocopter	1	1
+73	alchemist	Alchemist	0	1
+74	invoker	Invoker	2	3
+75	silencer	Silencer	2	2
+76	obsidian_destroyer	Outworld Destroyer	2	2
+77	lycan	Lycan	0	2
+78	brewmaster	Brewmaster	0	3
+79	shadow_demon	Shadow Demon	2	2
+80	lone_druid	Lone Druid	1	3
+81	chaos_knight	Chaos Knight	0	1
+82	meepo	Meepo	1	3
+83	treant	Treant Protector	0	2
+84	ogre_magi	Ogre Magi	2	1
+85	undying	Undying	0	1
+86	rubick	Rubick	2	3
+87	disruptor	Disruptor	2	2
+88	nyx_assassin	Nyx Assassin	1	2
+89	naga_siren	Naga Siren	1	2
+90	keeper_of_the_light	Keeper of the Light	2	2
+91	wisp	Io	0	3
+92	visage	Visage	2	3
+93	slark	Slark	1	2
+94	medusa	Medusa	1	1
+95	troll_warlord	Troll Warlord	1	2
+96	centaur	Centaur Warrunner	0	1
+97	magnataur	Magnus	0	2
+98	shredder	Timbersaw	0	2
+99	bristleback	Bristleback	0	1
+100	tusk	Tusk	0	1
+101	skywrath_mage	Skywrath Mage	2	1
+102	abaddon	Abaddon	0	1
+103	elder_titan	Elder Titan	0	2
+104	legion_commander	Legion Commander	0	1
+106	ember_spirit	Ember Spirit	1	2
+107	earth_spirit	Earth Spirit	0	3
+109	terrorblade	Terrorblade	1	2
+110	phoenix	Phoenix	0	2
+111	oracle	Oracle	2	3
+105	techies	Techies	2	2
+112	winter_wyvern	Winter Wyvern	2	2
+113	arc_warden	Arc Warden	1	3
+108	abyssal_underlord	Underlord	0	2
+114	monkey_king	Monkey King	1	2
+120	pangolier	Pangolier	1	2
+119	dark_willow	Dark Willow	2	2
+121	grimstroke	Grimstroke	2	2
+129	mars	Mars	0	1
+126	void_spirit	Void Spirit	2	2
+128	snapfire	Snapfire	0	1
+123	hoodwink	Hoodwink	1	2
+135	dawnbreaker	Dawnbreaker	0	1
+136	marci	Marci	0	2
+137	primal_beast	Primal Beast	0	1
