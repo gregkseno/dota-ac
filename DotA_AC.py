@@ -4,7 +4,6 @@
 import os
 import sys
 import time
-# TODO: Change
 import keyboard
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QKeyEvent, QIcon
@@ -37,12 +36,6 @@ class KeyMonitor(QtCore.QObject):
 
 
 class AutomationThread(QThread):
-    # _vx_default = 0.3
-    # _vy_default = 0.3347
-    # _vw_default = 0.4
-    # _vh_default = 0.2361
-    # _aspect_default = 16 / 9
-    # _threshold = 0.8
     def __init__(self, game, hero_names):
         super().__init__()
         self.game = game
@@ -66,45 +59,7 @@ class AutomationThread(QThread):
                     return
             self.hero_select(self.hero_names)
 
-    # def feature_matching(self, orb, bf, img, btn_tmp, btn_kp, btn_des):
-    #     # Objects for feature detection and homography of screenshot
-    #     img_kp, img_des = orb.detectAndCompute(img, None)
-    #     matches = bf.match(btn_des, img_des)
-    #     if matches:
-    #         matches = sorted(matches, key=lambda x: x.distance)
-    #         if len(matches) > 10:
-    #             src_pts = np.float32([btn_kp[m.queryIdx].pt for m in matches]).reshape(-1, 1, 2)
-    #             dst_pts = np.float32([img_kp[m.trainIdx].pt for m in matches]).reshape(-1, 1, 2)
-    #             _, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
-    #             mask = mask.ravel().tolist()
-    #             unique, counts = np.unique(np.array(mask), return_counts=True)
-    #             count = dict(zip(unique, counts))
-    #             print(count[1]/len(mask))
-    #             if count[1]/len(mask) >= self._threshold:
-    #                 return True
-    #     return False
-
-    # def get_region(self, resolution):
-    #     aspect = resolution[0]/resolution[1]
-    #     x = int(resolution[0] * aspect / self._aspect_default * self._vx_default)
-    #     y = int(resolution[1] * aspect / self._aspect_default * self._vy_default)
-    #     w = int(resolution[0] * aspect / self._aspect_default * self._vw_default)
-    #     h = int(resolution[1] * aspect / self._aspect_default * self._vh_default)
-    #     return x, y, w, h
-
     def auto_clicking(self):
-        # resolution = pyautogui.size()
-        # region = self.get_region(resolution)
-        # btn_tmp = cv2.imread('accept_button.png', cv2.IMREAD_GRAYSCALE)
-        #
-        # # Objects for feature detection and homography of template image
-        # orb = cv2.ORB_create()
-        # btn_kp, btn_des = orb.detectAndCompute(btn_tmp, None)
-        # bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
-        # screenshot = pyautogui.screenshot(region=region)
-        # img = cv2.cvtColor(np.array(screenshot), cv2.COLOR_BGR2GRAY)
-        #
-        # accept = self.feature_matching(orb, bf, img, btn_tmp, btn_kp, btn_des)
         keyboard.send("enter")
         if self.game.map.game_state in (GameStates.DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD.name,
                                         GameStates.DOTA_GAMERULES_STATE_HERO_SELECTION.name):
@@ -342,10 +297,6 @@ class HeroWindow(QMainWindow):
         for hero_list in self.heroes_lists:
             self.parent.selected_heroes += [hero.text() for hero in hero_list.selectedItems()]
         # TODO: Make number in order of selected heroes
-        # for i ,hero in enumerate(self.parent.selected_heroes):
-        #     for hero_list in self.heroes_lists:
-        #         for hero_item in hero_list:
-        #             if
         print(self.parent.selected_heroes)
 
 
